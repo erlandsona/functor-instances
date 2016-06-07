@@ -9,6 +9,26 @@ import Data.Monoid
 import Test.Hspec
 import Test.QuickCheck
 
+
+
+
+-- Manifest... For running all specs...
+main :: IO ()
+main = do
+ hspec spec1
+ hspec spec2
+ hspec spec3
+ hspec spec4
+ hspec spec5
+ hspec spec6
+ hspec spec7
+ hspec spec8
+ hspec spec9
+ -- hspec spec10 -- Doesn't work as indicated by excersize
+
+
+
+
 -- QuickCheck properties...
 
 functorIdentityEq :: (Functor f, Eq (f a)) => f a -> Bool
@@ -204,18 +224,3 @@ data Trivial = Trivial deriving (Show)
 --     context "Functor Identity" $ do
 --       it "" $ do property $ \w -> functorIdentityEq (Trivial :: Trivial)
 
-
-
--- Manifest... For running all specs...
-main :: IO ()
-main = do
- hspec spec1
- hspec spec2
- hspec spec3
- hspec spec4
- hspec spec5
- hspec spec6
- hspec spec7
- hspec spec8
- hspec spec9
- -- hspec spec10
