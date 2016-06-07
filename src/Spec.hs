@@ -18,33 +18,15 @@ functorComposeEq :: (Eq (f c), Functor f) => (a -> b) -> (b -> c) -> f a -> Bool
 functorComposeEq f g x =
   (fmap g (fmap f x)) == (fmap (g . f) x)
 
+--------------------------------------------------------------
+-- Not sure what this is for or really how to write ^^^ ?
+---------------------------------------------------------
+--
 -- type IntToInt = Fun Int Int
 -- type IntFC = [Int] -> IntToInt -> IntToInt -> Bool
 -- functorCompose' :: (Eq (f c), Functor f) => f a -> Fun a b -> Fun b c -> Bool
 -- functorCompose' x (Fun _ f) (Fun _ g) = (fmap (g . f) x) == (fmap g . fmap f $ x)
 
-data Three a b c = Three a b c deriving (Show)
-
-data Three' a b = Three' a b b deriving (Show)
-
-data Four a b c d = Four a b c d deriving (Show)
-
-data Four' a b = Four' a a a b deriving (Show)
-
--- Can you implement one for this type? Why? Why not?
-data Trivial = Trivial deriving (Show)
-
-
-
-
-main :: IO ()
-main = do
- hspec spec1
- hspec spec2
- hspec spec3
- hspec spec4
- hspec spec5
- hspec spec6
 
 spec1 :: Spec
 spec1 = do
@@ -140,22 +122,100 @@ spec5 = do
 
 
 
-
-data And a b = And a b deriving (Eq, Show)
-instance Functor (And a) where
-  fmap f (And a b) = And a (f b)
+data Three a b c = Three a b c deriving (Eq, Show)
+instance Functor (Three a b) where
+  fmap f (Three a b c) = Three a b (f c)
 
 spec6 :: Spec
 spec6 = do
-  describe "Two a b" $ do
+  describe "Three x y z" $ do
     context "Functor Identity" $ do
-      it "" $ do property $ \x y -> functorIdentityEq (Two x y :: Two Int Int)
-      it "" $ do property $ \x y -> functorIdentityEq (Two x y :: Two String Int)
-      it "" $ do property $ \x y -> functorIdentityEq (Two x y :: Two Int String)
-      it "" $ do property $ \x y -> functorIdentityEq (Two x y :: Two String String)
+      it "" $ do property $ \x y z -> functorIdentityEq (Three x y z :: Three Int Int Int)
+      it "" $ do property $ \x y z -> functorIdentityEq (Three x y z :: Three String Int Char)
+      it "" $ do property $ \x y z -> functorIdentityEq (Three x y z :: Three Int String String)
     context "Functor Composability" $ do
-      it "" $ do property $ \x y -> functorComposeEq (+1) (*2) (Two x y :: Two Int Int)
-      it "" $ do property $ \x y -> functorComposeEq (++"Hey") ("You " <>) (Two x y :: Two String String)
-      it "" $ do property $ \x y -> functorComposeEq (const 'p') (const 'f') (Two x y :: Two Char Char)
+      it "" $ do property $ \x y z -> functorComposeEq (+1) (*2) (Three x y z :: Three Int Int Int)
+      it "" $ do property $ \x y z -> functorComposeEq (++"Hey") ("You " <>) (Three x y z :: Three String String String)
+      it "" $ do property $ \x y z -> functorComposeEq (const 'p') (const 'f') (Three x y z :: Three Char Char Char)
 
 
+
+
+data Three' a b = Three' a b b deriving (Eq, Show)
+instance Functor (Three' a) where
+  fmap f (Three' x y z) = Three' x (f y) (f z)
+
+spec7 :: Spec
+spec7 = do
+  describe "Three' x y y" $ do
+    context "Functor Identity" $ do
+      it "" $ do property $ \x y z -> functorIdentityEq (Three' x y z :: Three' String Int)
+      it "" $ do property $ \x y z -> functorIdentityEq (Three' x y z :: Three' String Char)
+      it "" $ do property $ \x y z -> functorIdentityEq (Three' x y z :: Three' Int String)
+    context "Functor Composability" $ do
+      it "" $ do property $ \x y z -> functorComposeEq (+1) (*2) (Three' x y z :: Three' Int Int)
+      it "" $ do property $ \x y z -> functorComposeEq (++"Hey") ("You " <>) (Three' x y z :: Three' String String)
+      it "" $ do property $ \x y z -> functorComposeEq (const 'p') (const 'f') (Three' x y z :: Three' Char Char)
+
+
+
+data Four a b c d = Four a b c d deriving (Eq, Show)
+instance Functor (Four a b c) where
+  fmap f (Four a b c d) = Four a b c (f d)
+
+spec8 :: Spec
+spec8 = do
+  describe "Four w x y z" $ do
+    context "Functor Identity" $ do
+      it "" $ do property $ \w x y z -> functorIdentityEq (Four w x y z :: Four Int Int Int Int)
+      it "" $ do property $ \w x y z -> functorIdentityEq (Four w x y z :: Four String Int Char Char)
+      it "" $ do property $ \w x y z -> functorIdentityEq (Four w x y z :: Four Int String String String)
+    context "Functor Composability" $ do
+      it "" $ do property $ \w x y z -> functorComposeEq (+1) (*2) (Four w x y z :: Four Int Int Int Int)
+      it "" $ do property $ \w x y z -> functorComposeEq (++"Hey") ("You " <>) (Four w x y z :: Four String String String String)
+      it "" $ do property $ \w x y z -> functorComposeEq (const 'p') (const 'f') (Four w x y z :: Four Char Char Char Char)
+
+
+
+data Four' a b = Four' a a a b deriving (Eq, Show)
+instance Functor (Four' a) where
+  fmap f (Four' a b c d) = Four' a b c (f d)
+
+spec9 :: Spec
+spec9 = do
+  describe "Four' w x y z" $ do
+    context "Functor Identity" $ do
+      it "" $ do property $ \w x y z -> functorIdentityEq (Four' w x y z :: Four' Char Int)
+      it "" $ do property $ \w x y z -> functorIdentityEq (Four' w x y z :: Four' String Char)
+      it "" $ do property $ \w x y z -> functorIdentityEq (Four' w x y z :: Four' Int String)
+    context "Functor Composability" $ do
+      it "" $ do property $ \w x y z -> functorComposeEq (+1) (*2) (Four' w x y z :: Four' Int Int)
+      it "" $ do property $ \w x y z -> functorComposeEq (++"Hey") ("You " <>) (Four' w x y z :: Four' String String)
+      it "" $ do property $ \w x y z -> functorComposeEq (const 'p') (const 'f') (Four' w x y z :: Four' Char Char)
+
+-- Can you implement one for this type? Why? Why not? No Trivial is not of Kind * -> *
+data Trivial = Trivial deriving (Show)
+-- instance Functor Trivial where -- Doesn't work
+--   fmap _ Trivial = Trivial
+
+-- spec10 :: Spec
+-- spec10 = do
+--   describe "Trivial" $ do
+--     context "Functor Identity" $ do
+--       it "" $ do property $ \w -> functorIdentityEq (Trivial :: Trivial)
+
+
+
+-- Manifest... For running all specs...
+main :: IO ()
+main = do
+ hspec spec1
+ hspec spec2
+ hspec spec3
+ hspec spec4
+ hspec spec5
+ hspec spec6
+ hspec spec7
+ hspec spec8
+ hspec spec9
+ -- hspec spec10
